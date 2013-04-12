@@ -35,6 +35,7 @@ DEST=$HOME
 DRYRUN=0
 SKIP_CONFLICTS=0
 FIX_CONFLICTS=0
+IGNORE_FILES="^.git|^.svn"
 
 CLR_CLEAR="\e[0m"
 CLR_CYAN="\e[1;36m"
@@ -165,6 +166,8 @@ function SymlinkRepo()
     shopt -s dotglob
 
     for file in *; do
+        [[ "$file" =~ $IGNORE_FILES ]] && continue
+
         SLINK="$DEST/$file"
 
         if [[ -e "$SLINK" && `readlink "$SLINK"` == "$repo/$file" ]]; then
