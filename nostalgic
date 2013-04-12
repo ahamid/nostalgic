@@ -162,12 +162,10 @@ function SymlinkRepo()
     log $CLR_MAGENTA "--> symlinking repo [$repo]"
 
     # uncomment this if '.' prefixed files are in the repo
-    #shopt -s dotglob
-
-    PREFIX="."
+    shopt -s dotglob
 
     for file in *; do
-        SLINK="$DEST/$PREFIX$file"
+        SLINK="$DEST/$file"
 
         if [[ -e "$SLINK" && `readlink "$SLINK"` == "$repo/$file" ]]; then
             log $CLR_CYAN "--> [$file] already symlinked"
@@ -196,7 +194,7 @@ function SymlinkRepo()
     done
 
     # uncomment this if '.' prefixed files are in the repo
-    #shopt -u dotglob
+    shopt -u dotglob
 
     cd "$OLDPWD"
 }
@@ -222,7 +220,7 @@ function Track()
     [[ -z "$1" || -z "$2" ]] && err "track requires two arguments"
 
     local repo="$REPOS/$2"
-    local newfile="$repo/${1#.}"
+    local newfile="$repo/$1"
 
     RepoExists "$repo" 'track'
 
@@ -241,13 +239,13 @@ function Track()
 
     if [[ $DRYRUN -eq 0 ]]; then
         TGTDIR="`dirname $1`"
-        [[ "$TGTDIR" != "." ]] && mkdir -p "$repo/${TGTDIR#.}"
+        [[ "$TGTDIR" != "." ]] && mkdir -p "$repo/$TGTDIR"
 
         mv -f "$1" "$newfile"
         ln -s "$newfile" "$1"
 
         cd "$repo"
-        git add "${1#.}"
+        git add "$1"
         cd "$OLDPWD"
     fi
 
